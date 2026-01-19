@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Вход - CloudVault{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <a href="{{ url_for('index') }}" class="auth-logo">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                </svg>
+                CloudVault
+            </a>
+            <p class="auth-subtitle">
+                {% if mode == 'register' %}
+                    Создайте свой аккаунт для начала работы
+                {% else %}
+                    Войдите в свой аккаунт
+                {% endif %}
+            </p>
+        </div>
+        
+        {% if mode == 'register' %}
+        <!-- Форма регистрации -->
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="form-group">
+                <label for="username" class="form-label">Имя пользователя</label>
+                <input type="text" id="username" name="username" class="form-control" 
+                       placeholder="Придумайте логин" required minlength="3" maxlength="50">
+            </div>
+            
+            <div class="form-group">
+                <label for="email" class="form-label">Электронная почта</label>
+                <input type="email" id="email" name="email" class="form-control" 
+                       placeholder="your@email.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">Пароль</label>
+                <input type="password" id="password" name="password" class="form-control" 
+                       placeholder="Минимум 6 символов" required minlength="6">
+            </div>
+            
+            <div class="form-group">
+                <label for="password_confirm" class="form-label">Подтверждение пароля</label>
+                <input type="password" id="password_confirm" name="password_confirm" class="form-control" 
+                       placeholder="Повторите пароль" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 btn-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Создать аккаунт
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">Уже есть аккаунт?</p>
+            <a href="{{ url_for('login') }}" class="btn btn-outline">
+                Войти в систему
+            </a>
+        </div>
+        
+        {% else %}
+        <!-- Форма входа -->
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="form-group">
+                <label for="username" class="form-label">Имя пользователя</label>
+                <input type="text" id="username" name="username" class="form-control" 
+                       placeholder="Ваш логин" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">Пароль</label>
+                <input type="password" id="password" name="password" class="form-control" 
+                       placeholder="Ваш пароль" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 btn-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                Войти
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">Нет аккаунта?</p>
+            <a href="{{ url_for('register') }}" class="btn btn-primary">
+                Зарегистрироваться
+            </a>
+        </div>
+        {% endif %}
+        
+        <!-- Преимущества -->
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+            <h4 style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem; text-align: center;">
+                Почему CloudVault?
+            </h4>
+            <div style="display: grid; gap: 0.75rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-secondary); font-size: 0.875rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="var(--success)" style="width: 20px; height: 20px; flex-shrink: 0;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Безопасное хранение файлов
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-secondary); font-size: 0.875rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="var(--success)" style="width: 20px; height: 20px; flex-shrink: 0;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Личные заметки всегда под рукой
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-secondary); font-size: 0.875rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="var(--success)" style="width: 20px; height: 20px; flex-shrink: 0;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Полный контроль над данными
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

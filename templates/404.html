@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Ошибка - CloudVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="error-container">
+        <div>
+            <div class="error-code">
+                {% if error_code %}
+                    {{ error_code }}
+                {% else %}
+                    404
+                {% endif %}
+            </div>
+            <h2 class="error-title">
+                {% if error_code == 403 %}
+                    Доступ запрещён
+                {% elif error_code == 500 %}
+                    Внутренняя ошибка сервера
+                {% else %}
+                    Страница не найдена
+                {% endif %}
+            </h2>
+            <p class="error-message">
+                {% if error_code == 403 %}
+                    У вас нет прав доступа к этому ресурсу. Возможно, этот файл или заметка принадлежит другому пользователю.
+                {% elif error_code == 500 %}
+                    Произошла внутренняя ошибка сервера. Пожалуйста, попробуйте позже или обратитесь к администратору.
+                {% else %}
+                    Запрашиваемая страница не существует или была перемещена. Проверьте правильность введённого адреса.
+                {% endif %}
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    На главную
+                </a>
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Вернуться назад
+                </a>
+            </div>
+            
+            <!-- Дополнительная информация -->
+            <div style="margin-top: 3rem; padding: 1.5rem; background: var(--bg-tertiary); border-radius: var(--border-radius); max-width: 500px; margin-left: auto; margin-right: auto;">
+                <h4 style="margin-bottom: 1rem; font-size: 1rem;">Возможно, вам поможет:</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem;">
+                    <li>
+                        <a href="{{ url_for('dashboard') }}" style="display: flex; align-items: center; gap: 0.5rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="var(--primary)" style="width: 16px; height: 16px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                            </svg>
+                            Мои файлы
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('notes') }}" style="display: flex; align-items: center; gap: 0.5rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="var(--primary)" style="width: 16px; height: 16px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Мои заметки
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('upload') }}" style="display: flex; align-items: center; gap: 0.5rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="var(--primary)" style="width: 16px; height: 16px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                            Загрузить файл
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

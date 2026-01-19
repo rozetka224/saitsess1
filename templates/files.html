@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Мои файлы - CloudVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div class="d-flex align-center justify-between">
+            <div>
+                <h1 class="page-title">Мои файлы</h1>
+                <p class="page-subtitle">Управление загруженными файлами и изображениями</p>
+            </div>
+            <a href="{{ url_for('upload') }}" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                Загрузить файл
+            </a>
+        </div>
+    </div>
+    
+    {% if files %}
+    <div class="files-grid">
+        {% for file in files %}
+        <div class="file-card">
+            <div class="file-preview">
+                {% if file.thumbnail %}
+                <img src="{{ file.thumbnail }}" alt="{{ file.original_name }}">
+                {% else %}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    {% if file.file_type in ['pdf'] %}
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    {% elif file.file_type in ['doc', 'docx'] %}
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    {% elif file.file_type in ['xls', 'xlsx'] %}
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    {% elif file.file_type in ['zip', 'rar', '7z'] %}
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                    {% elif file.file_type in ['txt'] %}
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    {% else %}
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    {% endif %}
+                </svg>
+                {% endif %}
+            </div>
+            <div class="file-info">
+                <div class="file-name" title="{{ file.original_name }}">{{ file.original_name }}</div>
+                <div class="file-meta">
+                    {{ file.file_type|upper }} • 
+                    {% if file.file_size < 1024 %}
+                        {{ file.file_size }} Б
+                    {% elif file.file_size < 1024 * 1024 %}
+                        {{ (file.file_size / 1024)|round(1) }} КБ
+                    {% else %}
+                        {{ (file.file_size / (1024 * 1024))|round(2) }} МБ
+                    {% endif %}
+                </div>
+                <div class="file-actions">
+                    <a href="{{ url_for('uploaded_file', filename=file.filename) }}" class="btn btn-primary btn-sm" download>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Скачать
+                    </a>
+                    <a href="{{ url_for('delete_file', file_id=file.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Вы уверены, что хотите удалить этот файл?');">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+            </svg>
+            <h3>Файлов пока нет</h3>
+            <p>Загрузите свой первый файл, чтобы начать использовать облачное хранилище</p>
+            <a href="{{ url_for('upload') }}" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+                Загрузить файл
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Статистика -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4 style="margin-bottom: 1rem;">Информация о хранилище</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                <div>
+                    <div style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Всего файлов</div>
+                    <div style="font-size: 1.5rem; font-weight: 600;">{{ files|length }}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Изображений</div>
+                    <div style="font-size: 1.5rem; font-weight: 600;">{{ images_count }}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Документов</div>
+                    <div style="font-size: 1.5rem; font-weight: 600;">{{ docs_count }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

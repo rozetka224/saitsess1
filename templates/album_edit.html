@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if album %}Редактирование альбома{% else %}Создание альбома{% endif %} - CloudVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div class="d-flex align-center justify-between">
+            <div>
+                <h1 class="page-title">
+                    {% if album %}Редактирование альбома{% else %}Создание альбома{% endif %}
+                </h1>
+                <p class="page-subtitle">
+                    {% if album %}Измените название и описание альбома{% else %}Создайте новый альбом для фотографий{% endif %}
+                </p>
+            </div>
+            <a href="{{ url_for('albums') }}" class="btn btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                К альбомам
+            </a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <form method="POST">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="title" class="form-label">Название альбома *</label>
+                    <input type="text" id="title" name="title" class="form-control" 
+                           placeholder="Например: Отпуск 2024, Семейные фото, Работа..."
+                           value="{{ album.title if album else '' }}" required autofocus>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description" class="form-label">Описание альбома</label>
+                    <textarea id="description" name="description" class="form-control" 
+                              placeholder="Добавьте описание альбома (необязательно)..."
+                              style="min-height: 100px;">{{ album.description if album else '' }}</textarea>
+                </div>
+                
+                <!-- Советы -->
+                <div style="background: var(--bg-tertiary); border-radius: var(--border-radius-sm); padding: 1rem; margin-top: 1rem;">
+                    <h4 style="font-size: 0.875rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="var(--info)" style="width: 20px; height: 20px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Как использовать альбомы
+                    </h4>
+                    <ul style="list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem;">
+                        <li style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="var(--success)" style="width: 16px; height: 16px; flex-shrink: 0; margin-top: 0.125rem;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Создавайте тематические альбомы для лучшей организации
+                        </li>
+                        <li style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="var(--success)" style="width: 16px; height: 16px; flex-shrink: 0; margin-top: 0.125rem;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Первое загруженное фото станет обложкой альбома
+                        </li>
+                        <li style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="var(--success)" style="width: 16px; height: 16px; flex-shrink: 0; margin-top: 0.125rem;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Вы можете изменить обложку в любое время
+                        </li>
+                        <li style="display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="var(--danger)" style="width: 16px; height: 16px; flex-shrink: 0; margin-top: 0.125rem;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Удаление альбома удаляет все фотографии в нём
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    {% if album %}
+                    <a href="{{ url_for('delete_album', album_id=album.id) }}" class="btn btn-danger" onclick="return confirm('Вы уверены? Все фотографии будут удалены!');">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Удалить альбом
+                    </a>
+                    {% endif %}
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <a href="{{ url_for('albums') }}" class="btn btn-secondary">Отмена</a>
+                    <button type="submit" class="btn btn-success">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        {% if album %}Сохранить изменения{% else %}Создать альбом{% endif %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Предпросмотр обложки -->
+    {% if album and album.cover_photo %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4 style="margin: 0;">Текущая обложка</h4>
+        </div>
+        <div class="card-body">
+            <img src="{{ url_for('static', filename='uploads/albums/' + album.id|string + '/' + album.cover_photo) }}" 
+                 alt="Обложка альбома" 
+                 style="max-width: 300px; max-height: 200px; object-fit: cover; border-radius: var(--border-radius-sm);">
+            <p style="margin-top: 0.75rem; font-size: 0.875rem; color: var(--text-secondary);">
+                Вы можете изменить обложку, загрузив новое фото в альбом и нажав "Сделать обложкой"
+            </p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Сохранение по Ctrl+S
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        document.querySelector('form').submit();
+    }
+    if (e.key === 'Backspace' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        window.location.href = '{{ url_for('albums') }}';
+    }
+});
+</script>
+{% endblock %}

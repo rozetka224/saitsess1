@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+
+{% block title %}{{ album.title }} - CloudVault{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Хлебные крошки -->
+    <div style="margin-bottom: 1.5rem;">
+        <a href="{{ url_for('albums') }}" class="btn btn-secondary btn-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 16px; height: 16px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            К альбомам
+        </a>
+    </div>
+    
+    <!-- Заголовок альбома -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex align-center justify-between" style="flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h1 class="page-title" style="margin-bottom: 0.5rem;">{{ album.title }}</h1>
+                    {% if album.description %}
+                    <p class="page-subtitle">{{ album.description }}</p>
+                    {% endif %}
+                    <div style="display: flex; gap: 1rem; margin-top: 0.75rem; font-size: 0.875rem; color: var(--text-secondary);">
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 16px; height: 16px; display: inline; vertical-align: middle;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {{ album.photo_count }} фотографий
+                        </span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 0.75rem;">
+                    <a href="{{ url_for('edit_album', album_id=album.id) }}" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 18px; height: 18px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Изменить
+                    </a>
+                    <a href="{{ url_for('delete_album', album_id=album.id) }}" class="btn btn-danger" onclick="return confirm('Вы уверены? Все фотографии будут удалены!');">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 18px; height: 18px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Удалить
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Зона загрузки фото -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 style="margin: 0;">Добавить фотографии</h4>
+        </div>
+        <div class="card-body">
+            <div class="upload-zone" id="photo-dropzone">
+                <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <h3>Перетащите фотографии сюда</h3>
+                <p>или нажмите кнопку для выбора файлов</p>
+                
+                <input type="file" name="photos" id="photo-input" multiple accept="image/*" style="display: none;">
+                <label for="photo-input" class="btn btn-primary btn-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    Выбрать фотографии
+                </label>
+                
+                <p class="upload-formats">Разрешённые форматы: PNG, JPG, JPEG, GIF, WebP</p>
+            </div>
+            
+            <!-- Прогресс загрузки -->
+            <div id="upload-progress" style="display: none; margin-top: 1rem;">
+                <div style="background: var(--bg-tertiary); border-radius: 4px; height: 8px; overflow: hidden;">
+                    <div id="progress-bar" style="background: var(--primary); height: 100%; width: 0%; transition: width 0.3s;"></div>
+                </div>
+                <p id="progress-text" style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">Загрузка...</p>
+            </div>
+            
+            <!-- Список загруженных фото -->
+            <div id="uploaded-photos" style="margin-top: 1rem;"></div>
+        </div>
+    </div>
+    
+    <!-- Галерея фотографий -->
+    {% if photos %}
+    <div class="photos-gallery">
+        {% for photo in photos %}
+        <div class="photo-card" data-photo-id="{{ photo.id }}">
+            <img src="{{ photo.url }}" alt="{{ photo.original_name }}" loading="lazy">
+            <div class="photo-overlay">
+                <div class="photo-actions">
+                    <a href="{{ photo.url }}" target="_blank" class="btn btn-primary btn-sm" title="Открыть">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 16px; height: 16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                        </svg>
+                    </a>
+                    <a href="{{ url_for('set_cover', album_id=album.id, photo_id=photo.id) }}" class="btn btn-success btn-sm" title="Сделать обложкой">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 16px; height: 16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </a>
+                    <a href="{{ url_for('delete_photo', photo_id=photo.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('Удалить это фото?');" title="Удалить">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 16px; height: 16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            <div class="photo-name" title="{{ photo.original_name }}">{{ photo.original_name }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <h3>В альбоме пока нет фотографий</h3>
+            <p>Загрузите первые фотографии в этот альбом</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.photos-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.photo-card {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background: var(--bg-tertiary);
+}
+
+.photo-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.photo-card:hover img {
+    transform: scale(1.05);
+}
+
+.photo-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.photo-card:hover .photo-overlay {
+    opacity: 1;
+}
+
+.photo-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.photo-actions .btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.photo-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.5rem;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    color: white;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.photo-card:hover .photo-name {
+    opacity: 1;
+}
+
+.uploaded-photo-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--border-radius-sm);
+    margin-top: 0.5rem;
+}
+
+.uploaded-photo-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.uploaded-photo-item .photo-info {
+    flex: 1;
+}
+
+.uploaded-photo-item .photo-name {
+    position: static;
+    background: none;
+    color: var(--text-primary);
+    opacity: 1;
+    padding: 0;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropzone = document.getElementById('photo-dropzone');
+    const fileInput = document.getElementById('photo-input');
+    const uploadProgress = document.getElementById('upload-progress');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const uploadedPhotos = document.getElementById('uploaded-photos');
+    
+    if (!dropzone) return;
+    
+    // Drag and drop обработчики
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight(e) {
+        dropzone.classList.add('dragover');
+    }
+    
+    function unhighlight(e) {
+        dropzone.classList.remove('dragover');
+    }
+    
+    dropzone.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+        const files = e.dataTransfer.files;
+        handleFiles(files);
+    }
+    
+    fileInput.addEventListener('change', function() {
+        handleFiles(this.files);
+    });
+    
+    function handleFiles(files) {
+        const albumId = {{ album.id }};
+        let uploaded = 0;
+        let total = files.length;
+        
+        if (total === 0) return;
+        
+        uploadProgress.style.display = 'block';
+        progressText.textContent = `Загружено 0 из ${total} фотографий...`;
+        
+        Array.from(files).forEach(file => {
+            if (!file.type.startsWith('image/')) {
+                total--;
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('photo', file);
+            
+            fetch(`/album/${albumId}/add_photo`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                uploaded++;
+                
+                if (data.success) {
+                    // Добавляем фото в галерею
+                    const photoCard = document.createElement('div');
+                    photoCard.className = 'photo-card';
+                    photoCard.dataset.photoId = data.photo.id;
+                    photoCard.innerHTML = `
+                        <img src="${data.photo.url}" alt="${data.photo.original_name}" loading="lazy">
+                        <div class="photo-overlay">
+                            <div class="photo-actions">
+                                <a href="${data.photo.url}" target="_blank" class="btn btn-primary btn-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 16px; height: 16px;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                    </svg>
+                                </a>
+                                <a href="/album/${albumId}/set_cover/${data.photo.id}" class="btn btn-success btn-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 16px; height: 16px;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </a>
+                                <a href="/photo/${data.photo.id}/delete" class="btn btn-danger btn-sm" onclick="return confirm('Удалить это фото?');">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 16px; height: 16px;">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="photo-name">${data.photo.original_name}</div>
+                    `;
+                    
+                    const gallery = document.querySelector('.photos-gallery');
+                    if (gallery) {
+                        gallery.appendChild(photoCard);
+                        
+                        // Удаляем empty state если есть
+                        const emptyState = gallery.querySelector('.empty-state');
+                        if (emptyState) {
+                            emptyState.closest('.card').remove();
+                        }
+                    }
+                    
+                    // Добавляем в список загруженных
+                    const uploadedItem = document.createElement('div');
+                    uploadedItem.className = 'uploaded-photo-item';
+                    uploadedItem.innerHTML = `
+                        <img src="${data.photo.url}" alt="${data.photo.original_name}">
+                        <div class="photo-info">
+                            <div class="photo-name">${data.photo.original_name}</div>
+                            <div style="font-size: 0.75rem; color: var(--success);">Загружено</div>
+                        </div>
+                    `;
+                    uploadedPhotos.appendChild(uploadedItem);
+                } else {
+                    const errorItem = document.createElement('div');
+                    errorItem.className = 'uploaded-photo-item';
+                    errorItem.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="var(--danger)" style="width: 24px; height: 24px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div class="photo-info">
+                            <div class="photo-name">${file.name}</div>
+                            <div style="font-size: 0.75rem; color: var(--danger);">${data.error || 'Ошибка загрузки'}</div>
+                        </div>
+                    `;
+                    uploadedPhotos.appendChild(errorItem);
+                }
+                
+                // Обновляем прогресс
+                const percent = (uploaded / total) * 100;
+                progressBar.style.width = percent + '%';
+                progressText.textContent = `Загружено ${uploaded} из ${total} фотографий...`;
+                
+                if (uploaded === total) {
+                    setTimeout(() => {
+                        uploadProgress.style.display = 'none';
+                        progressBar.style.width = '0%';
+                        // Перезагружаем страницу для обновления счётчика
+                        if (uploadedPhotos.children.length > 0) {
+                            setTimeout(() => location.reload(), 1000);
+                        }
+                    }, 1000);
+                }
+            })
+            .catch(error => {
+                uploaded++;
+                console.error('Ошибка загрузки:', error);
+            });
+        });
+    }
+});
+</script>
+{% endblock %}
