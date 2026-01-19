@@ -8,6 +8,10 @@
 - **Галерея изображений**: Просмотр загруженных изображений с превью
 - **Безопасность**: Хеширование паролей, защита от несанкционированного доступа
 - **Современный интерфейс**: Адаптивный дизайн, drag-and-drop загрузка
+<img width="1919" height="1079" alt="Screenshot_4" src="https://github.com/user-attachments/assets/04e5fa6a-5108-4f63-a43b-f0ec9a022526" />
+<img width="1919" height="1079" alt="Screenshot_3" src="https://github.com/user-attachments/assets/781f8c6f-cb22-42d9-8bda-aa69f2633f3a" />
+<img width="1919" height="1079" alt="Screenshot_2" src="https://github.com/user-attachments/assets/37fe4822-d93c-4ea6-84a9-44fe06cdd112" />
+<img width="1919" height="1079" alt="Screenshot_1" src="https://github.com/user-attachments/assets/f4f16d46-0d07-4b84-84c9-a60005be378a" />
 
 ## Установка
 
